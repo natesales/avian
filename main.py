@@ -4,6 +4,7 @@ import time
 
 import cv2
 import mediapipe
+import numpy
 
 FONT = cv2.FONT_HERSHEY_PLAIN
 FONT_COLOR = (255, 255, 255)
@@ -11,21 +12,36 @@ FONT_SCALE = 2
 FONT_THICKNESS = 2
 INVERT_VERTICAL = False
 INVERT_HORIZONTAL = True
-MAX_NUM_HANDS = 2
+MAX_NUM_HANDS = 1
 
 PINCH_PROXIMITY_RADIUS = 10
 
 cap = cv2.VideoCapture(0)
 
-hands_sl = mediapipe.solutions.hands
-hands = hands_sl.Hands(max_num_hands=MAX_NUM_HANDS)
+hands = mediapipe.solutions.hands.Hands(max_num_hands=MAX_NUM_HANDS)
 
 results = None
 p_time = 0
 
 
+def put_text(img, text, pos):
+    cv2.putText(img, text, pos, FONT, FONT_SCALE, FONT_COLOR, FONT_THICKNESS)
+
+
 def circle_intersection(x0, y0, x1, y1, radius) -> bool:
     return math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2) < (radius * 2)
+
+
+def pinch_detect(lms, finger1: mediapipe.solutions.hands.HandLandmark, finger2: mediapipe.solutions.hands.HandLandmark) -> bool:
+    finger1_lm = lms.landmark[finger1]
+    finger2_lm = lms.landmark[finger2]
+    h, w, _ = img.shape
+
+    return circle_intersection(
+        int(finger1_lm.x * w), int(finger1_lm.y * h),
+        int(finger2_lm.x * w), int(finger2_lm.y * h),
+        PINCH_PROXIMITY_RADIUS
+    )
 
 
 while True:
@@ -40,11 +56,13 @@ while True:
     results = hands.process(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
     if results.multi_hand_landmarks:
-        cv2.putText(img, "Hands: " + str(len(results.multi_hand_landmarks)), (5, 120), FONT, FONT_SCALE, FONT_COLOR,
-                    FONT_THICKNESS)
+        h, w, _ = img.shape
+        img = numpy.zeros((h, w, 3), numpy.uint8)
+
+        put_text(img, "Hands: " + str(len(results.multi_hand_landmarks)), (5, 120))
         for idx, handLms in enumerate(results.multi_hand_landmarks):
             # Draw hand matrix
-            mediapipe.solutions.drawing_utils.draw_landmarks(img, handLms, hands_sl.HAND_CONNECTIONS)
+            mediapipe.solutions.drawing_utils.draw_landmarks(img, handLms, mediapipe.solutions.hands.HAND_CONNECTIONS)
 
             # Detect left/right hand
             handedness = "Unknown"
@@ -52,22 +70,15 @@ while True:
                 handedness = results.multi_handedness[idx].classification[0].label
 
             # Pinch detection
-            h, w, c = img.shape
-            index_finger = handLms.landmark[hands_sl.HandLandmark.INDEX_FINGER_TIP]
-            thumb = handLms.landmark[hands_sl.HandLandmark.THUMB_TIP]
-            intersecting = circle_intersection(
-                int(index_finger.x * w), int(index_finger.y * h),
-                int(thumb.x * w), int(thumb.y * h),
-                PINCH_PROXIMITY_RADIUS
-            )
-            if intersecting:
-                if handedness == "Left":
-                    cv2.putText(img, "Left pinch", (5, 60), FONT, FONT_SCALE, FONT_COLOR, FONT_THICKNESS)
-                elif handedness == "Right":
-                    cv2.putText(img, "Right pinch", (5, 90), FONT, FONT_SCALE, FONT_COLOR, FONT_THICKNESS)
+            index_thumb_pinch = pinch_detect(handLms, mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP, mediapipe.solutions.hands.HandLandmark.THUMB_TIP)
+
+            if handedness == "Left":
+                put_text(img, "Left pinch: " + str(index_thumb_pinch), (5, 60))
+            elif handedness == "Right":
+                put_text(img, "Right pinch: " + str(index_thumb_pinch), (5, 90))
 
             # Draw white dot
-            for digit in [hands_sl.HandLandmark.INDEX_FINGER_TIP, hands_sl.HandLandmark.THUMB_TIP]:
+            for digit in [mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP, mediapipe.solutions.hands.HandLandmark.THUMB_TIP]:
                 if handedness == "Left":
                     color = (0, 0, 255)
                 elif handedness == "Right":
@@ -84,7 +95,7 @@ while True:
 
     # FPS indicator
     h, w, c = img.shape
-    cv2.putText(img, str(int(fps)), (w - 50, 30), FONT, FONT_SCALE, FONT_COLOR, FONT_THICKNESS)
+    put_text(img, str(int(fps)), (w - 50, 30))
 
     cv2.namedWindow("Image", cv2.WINDOW_NORMAL)
     cv2.imshow("Image", img)
