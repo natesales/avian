@@ -11,13 +11,14 @@ FONT_SCALE = 2
 FONT_THICKNESS = 2
 INVERT_VERTICAL = False
 INVERT_HORIZONTAL = True
+MAX_NUM_HANDS = 2
 
 PINCH_PROXIMITY_RADIUS = 10
 
 cap = cv2.VideoCapture(0)
 
 hands_sl = mediapipe.solutions.hands
-hands = hands_sl.Hands()
+hands = hands_sl.Hands(max_num_hands=MAX_NUM_HANDS)
 
 results = None
 p_time = 0
