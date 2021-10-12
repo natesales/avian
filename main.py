@@ -83,7 +83,8 @@ while True:
 
     # FPS indicator
     h, w, c = img.shape
-    cv2.putText(img, str(int(fps)), (w-50, 30), FONT, FONT_SCALE, FONT_COLOR, FONT_THICKNESS)
+    cv2.putText(img, str(int(fps)), (w - 50, 30), FONT, FONT_SCALE, FONT_COLOR, FONT_THICKNESS)
 
+    cv2.namedWindow("Image", cv2.WINDOW_NORMAL)
     cv2.imshow("Image", img)
     cv2.waitKey(1)
