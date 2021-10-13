@@ -90,9 +90,9 @@ while True:
             for digit in [mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
                           mediapipe.solutions.hands.HandLandmark.THUMB_TIP]:
                 if handedness == gestures.Hand.LEFT:
-                    color = (0, 0, 255)
-                elif handedness == gestures.Hand.RIGHT:
                     color = (255, 0, 0)
+                elif handedness == gestures.Hand.RIGHT:
+                    color = (0, 0, 255)
                 else:
                     color = (255, 255, 255)
 
