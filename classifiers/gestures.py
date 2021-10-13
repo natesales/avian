@@ -107,4 +107,4 @@ def middle_finger(landmarks: mediapipe.framework.formats.landmark_pb2.Normalized
         landmarks.landmark[mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_MCP].y,
     ]
     # If the list isn't sorted in ascending order, then the finger isn't extended vertically
-    return middle_finger_segments == sorted(middle_finger_segments):
+    return middle_finger_segments == sorted(middle_finger_segments)
