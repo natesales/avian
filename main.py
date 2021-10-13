@@ -1,11 +1,12 @@
 import logging
-import math
 import time
 
 import cv2
 import mediapipe
 import numpy
 from networktables import NetworkTables
+
+from classifiers import gestures
 
 cap = cv2.VideoCapture(0)
 
@@ -28,7 +29,7 @@ def sd_change_listener(table, key, value, isNew):
 sd.addEntryListener(sd_change_listener, key="vision/max_num_hands", immediateNotify=True)
 
 SD_DEFAULTS = {
-    "vision/max_num_hands": 2,
+    "vision/max_num_hands": 1,
     "vision/pinch_proximity_radius": 7,
     "vision/invert_horizontal": False,
     "vision/invert_vertical": False,
@@ -58,22 +59,6 @@ henum = mediapipe.solutions.hands.HandLandmark
 results = None
 p_time = 0
 
-
-def circle_intersection(x0, y0, x1, y1, radius) -> bool:
-    return math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2) < (radius * 2)
-
-
-def pinch_detect(lms, finger1: henum, finger2: henum) -> bool:
-    finger1_lm = lms.landmark[finger1]
-    finger2_lm = lms.landmark[finger2]
-
-    return circle_intersection(
-        int(finger1_lm.x * w), int(finger1_lm.y * h),
-        int(finger2_lm.x * w), int(finger2_lm.y * h),
-        int(sd_get_value("vision/pinch_proximity_radius"))
-    )
-
-
 while True:
     success, img = cap.read()
     if not success:
@@ -102,62 +87,51 @@ while True:
                 handedness = results.multi_handedness[idx].classification[0].label
 
             # Pinch detection
-            index_thumb_pinch = pinch_detect(handLms, henum.INDEX_FINGER_TIP, henum.THUMB_TIP)
-            if handedness == "Left":
+            index_thumb_pinch = gestures.pinch(
+                handLms,
+                henum.INDEX_FINGER_TIP,
+                henum.THUMB_TIP,
+                int(sd_get_value("vision/pinch_proximity_radius")),
+                w,
+                h
+            )
+            if handedness == gestures.Hand.LEFT:
                 sd.putBoolean("vision/left_pinch", index_thumb_pinch)
-            elif handedness == "Right":
+            elif handedness == gestures.Hand.RIGHT:
                 sd.putBoolean("vision/right_pinch", index_thumb_pinch)
 
             # Draw pinch radii
-            for digit in [henum.INDEX_FINGER_TIP,
-                          henum.THUMB_TIP]:
-                if handedness == "Left":
+            for digit in [henum.INDEX_FINGER_TIP, henum.THUMB_TIP]:
+                if handedness == gestures.Hand.LEFT:
                     color = (0, 0, 255)
-                elif handedness == "Right":
+                elif handedness == gestures.Hand.RIGHT:
                     color = (255, 0, 0)
                 else:
                     color = (255, 255, 255)
 
                 lm = handLms.landmark[digit]
                 cv2.circle(img, (int(lm.x * w), int(lm.y * h)), int(sd_get_value("vision/pinch_proximity_radius")),
-                           color,
-                           thickness=2)
+                           color, thickness=2)
+
+            # Detect middle finger
+            middle_finger = gestures.middle_finger(handLms)
+            print(middle_finger)
 
             # Fist detection
-            fingertips = [henum.INDEX_FINGER_TIP, henum.MIDDLE_FINGER_TIP, henum.RING_FINGER_TIP, henum.PINKY_TIP]
-            fingertip_average_x = 0
-            fingertip_average_y = 0
-            for fingertip in fingertips:
-                fingertip_average_x += int(w * handLms.landmark[fingertip].x)
-                fingertip_average_y += int(h * handLms.landmark[fingertip].y)
-            fingertip_average_x = int(fingertip_average_x / len(fingertips))
-            fingertip_average_y = int(fingertip_average_y / len(fingertips))
-
-            middle_finger_base_y = int(h * handLms.landmark[henum.MIDDLE_FINGER_MCP].y)
-            wrist_y = int(h * handLms.landmark[henum.WRIST].y)
-
-            fist = False
-            if middle_finger_base_y < wrist_y:  # Hand facing up
-                fist = fingertip_average_y > middle_finger_base_y
-            else:
-                fist = fingertip_average_y < middle_finger_base_y
-
-            if middle_finger_base_y == 0 or wrist_y == 0 or fingertip_average_y == 0:
-                fist = False
-
-            if handedness == "Left":
+            fist = gestures.fist(handLms, h)
+            if handedness == gestures.Hand.LEFT:
                 sd.putBoolean("vision/left_fist", fist)
-            elif handedness == "Right":
+            elif handedness == gestures.Hand.RIGHT:
                 sd.putBoolean("vision/right_fist", fist)
 
-            # Draw fist detection line
-            cv2.line(
-                img,
-                (fingertip_average_x - 10, fingertip_average_y),
-                (fingertip_average_x + 10, fingertip_average_y),
-                (0, 255, 0),
-                thickness=3
-            )
+            # # Draw fist detection line
+            # cv2.line(
+            #     img,
+            #     (fingertip_average_x - 10, fingertip_average_y),
+            #     (fingertip_average_x + 10, fingertip_average_y),
+            #     (0, 255, 0),
+            #     thickness=3
+            # )
 
     else:  # No hands detected
         sd.putNumber("vision/detected_hands", 0)
