@@ -1,8 +1,10 @@
-# Hand Detection
+# Avian
 
-Hand detection using [MediaPipe](https://google.github.io/mediapipe/solutions/hands.html)
+**A**utonomous **V**ision **I**nterface **A**ccessed via **N**etworkTables. In other words, hand tracking for FRC Team 1540.
 
-Right hand is red, left and is blue
+## Visualization
+
+Right hand is red, left and is blue.
 
 ## Calibration
 
