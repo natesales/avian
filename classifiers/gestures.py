@@ -81,7 +81,7 @@ def fist(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkL
 
 
 def middle_finger(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList) -> bool:
-    """Detect middle_finger
+    """Detect middle finger
 
     :param landmarks: List of landmarks in hand
 
@@ -108,3 +108,33 @@ def middle_finger(landmarks: mediapipe.framework.formats.landmark_pb2.Normalized
     ]
     # If the list isn't sorted in ascending order, then the finger isn't extended vertically
     return middle_finger_segments == sorted(middle_finger_segments)
+
+
+def index_finger(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList) -> bool:
+    """Detect index finger
+
+    :param landmarks: List of landmarks in hand
+
+    :returns: True if the hand is making a index finger raised gesture
+    """
+
+    # Validate that all other fingers are below the middle finger
+    index_finger_segment_y = landmarks.landmark[mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_PIP].y
+    for finger in [
+        mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_TIP,
+        mediapipe.solutions.hands.HandLandmark.RING_FINGER_TIP,
+        mediapipe.solutions.hands.HandLandmark.PINKY_TIP
+    ]:
+        finger_lm_y = landmarks.landmark[finger].y
+        if finger_lm_y < index_finger_segment_y:
+            return False
+
+    # Validate the index finger is extended
+    index_finger_segments = [
+        landmarks.landmark[mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP].y,
+        landmarks.landmark[mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_DIP].y,
+        landmarks.landmark[mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_PIP].y,
+        landmarks.landmark[mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_MCP].y,
+    ]
+    # If the list isn't sorted in ascending order, then the finger isn't extended vertically
+    return index_finger_segments == sorted(index_finger_segments)

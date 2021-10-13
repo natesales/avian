@@ -69,7 +69,7 @@
               "_title": "vision/max_num_hands"
             }
           },
-          "8,0": {
+          "7,0": {
             "size": [
               1,
               1
@@ -143,17 +143,6 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "7,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/vision/frame_processing_time",
-              "_title": "vision/frame_processing_time"
-            }
-          },
           "6,3": {
             "size": [
               2,
@@ -180,15 +169,41 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "6,4": {
+          "2,0": {
             "size": [
               1,
-              1
+              2
             ],
             "content": {
               "_type": "Toggle Switch",
               "_source0": "network_table:///SmartDashboard/vision/calibrated",
               "_title": "vision/calibrated"
+            }
+          },
+          "6,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/vision/left_index_finger",
+              "_title": "vision/left_index_finger",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "8,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/vision/right_index_finger",
+              "_title": "vision/right_index_finger",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
             }
           }
         }
@@ -208,8 +223,8 @@
     }
   ],
   "windowGeometry": {
-    "x": 938.0,
-    "y": 118.0,
+    "x": 885.0,
+    "y": 112.0,
     "width": 1541.0,
     "height": 1119.0
   }

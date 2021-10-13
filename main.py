@@ -21,7 +21,7 @@ SD_DEFAULTS = {
     "vision/calibrated": False,
 }
 
-SD_DETECTIONS = ["pinch", "fist", "middle_finger"]
+SD_DETECTIONS = ["pinch", "fist", "middle_finger", "index_finger"]
 
 for detection in SD_DETECTIONS:
     SD_DEFAULTS[f"vision/left_{detection}"] = False
@@ -113,6 +113,13 @@ while True:
                 sd.set("vision/left_middle_finger", middle_finger)
             elif handedness == gestures.Hand.RIGHT:
                 sd.set("vision/right_middle_finger", middle_finger)
+
+            # Detect index finger
+            index_finger = gestures.index_finger(handLms)
+            if handedness == gestures.Hand.LEFT:
+                sd.set("vision/left_index_finger", index_finger)
+            elif handedness == gestures.Hand.RIGHT:
+                sd.set("vision/right_index_finger", index_finger)
 
             # Fist detection
             fist = gestures.fist(handLms, h)
