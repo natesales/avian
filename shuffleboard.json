@@ -17,8 +17,8 @@
             ],
             "content": {
               "_type": "Number Slider",
-              "_source0": "network_table:///SmartDashboard/vision/pinch_proximity_radius",
-              "_title": "vision/pinch_proximity_radius",
+              "_source0": "network_table:///SmartDashboard/avian/pinch_proximity_radius",
+              "_title": "avian/pinch_proximity_radius",
               "Slider Settings/Min": -0.0,
               "Slider Settings/Max": 100.0,
               "Slider Settings/Block increment": 1.0,
@@ -32,8 +32,8 @@
             ],
             "content": {
               "_type": "Toggle Switch",
-              "_source0": "network_table:///SmartDashboard/vision/invert_horizontal",
-              "_title": "vision/invert_horizontal"
+              "_source0": "network_table:///SmartDashboard/avian/invert_horizontal",
+              "_title": "avian/invert_horizontal"
             }
           },
           "3,1": {
@@ -43,8 +43,8 @@
             ],
             "content": {
               "_type": "Toggle Switch",
-              "_source0": "network_table:///SmartDashboard/vision/invert_vertical",
-              "_title": "vision/invert_vertical"
+              "_source0": "network_table:///SmartDashboard/avian/invert_vertical",
+              "_title": "avian/invert_vertical"
             }
           },
           "6,0": {
@@ -54,8 +54,8 @@
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/vision/fps",
-              "_title": "vision/fps"
+              "_source0": "network_table:///SmartDashboard/avian/fps",
+              "_title": "avian/fps"
             }
           },
           "3,3": {
@@ -65,8 +65,8 @@
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/vision/max_num_hands",
-              "_title": "vision/max_num_hands"
+              "_source0": "network_table:///SmartDashboard/avian/max_num_hands",
+              "_title": "avian/max_num_hands"
             }
           },
           "7,0": {
@@ -76,8 +76,8 @@
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/vision/detected_hands",
-              "_title": "vision/detected_hands"
+              "_source0": "network_table:///SmartDashboard/avian/detected_hands",
+              "_title": "avian/detected_hands"
             }
           },
           "3,2": {
@@ -87,8 +87,8 @@
             ],
             "content": {
               "_type": "Toggle Switch",
-              "_source0": "network_table:///SmartDashboard/vision/black_background",
-              "_title": "vision/black_background"
+              "_source0": "network_table:///SmartDashboard/avian/black_background",
+              "_title": "avian/black_background"
             }
           },
           "6,1": {
@@ -98,8 +98,8 @@
             ],
             "content": {
               "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/vision/left_pinch",
-              "_title": "vision/left_pinch",
+              "_source0": "network_table:///SmartDashboard/avian/left_pinch",
+              "_title": "avian/left_pinch",
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
@@ -111,8 +111,8 @@
             ],
             "content": {
               "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/vision/right_pinch",
-              "_title": "vision/right_pinch",
+              "_source0": "network_table:///SmartDashboard/avian/right_pinch",
+              "_title": "avian/right_pinch",
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
@@ -124,8 +124,8 @@
             ],
             "content": {
               "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/vision/left_fist",
-              "_title": "vision/left_fist",
+              "_source0": "network_table:///SmartDashboard/avian/left_fist",
+              "_title": "avian/left_fist",
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
@@ -137,8 +137,8 @@
             ],
             "content": {
               "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/vision/right_fist",
-              "_title": "vision/right_fist",
+              "_source0": "network_table:///SmartDashboard/avian/right_fist",
+              "_title": "avian/right_fist",
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
@@ -150,8 +150,8 @@
             ],
             "content": {
               "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/vision/left_middle_finger",
-              "_title": "vision/left_middle_finger",
+              "_source0": "network_table:///SmartDashboard/avian/left_middle_finger",
+              "_title": "avian/left_middle_finger",
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
@@ -163,8 +163,8 @@
             ],
             "content": {
               "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/vision/right_middle_finger",
-              "_title": "vision/right_middle_finger",
+              "_source0": "network_table:///SmartDashboard/avian/right_middle_finger",
+              "_title": "avian/right_middle_finger",
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
@@ -176,8 +176,8 @@
             ],
             "content": {
               "_type": "Toggle Switch",
-              "_source0": "network_table:///SmartDashboard/vision/calibrated",
-              "_title": "vision/calibrated"
+              "_source0": "network_table:///SmartDashboard/avian/calibrated",
+              "_title": "avian/calibrated"
             }
           },
           "6,4": {
@@ -187,8 +187,8 @@
             ],
             "content": {
               "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/vision/left_index_finger",
-              "_title": "vision/left_index_finger",
+              "_source0": "network_table:///SmartDashboard/avian/left_index_finger",
+              "_title": "avian/left_index_finger",
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
@@ -200,8 +200,8 @@
             ],
             "content": {
               "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/vision/right_index_finger",
-              "_title": "vision/right_index_finger",
+              "_source0": "network_table:///SmartDashboard/avian/right_index_finger",
+              "_title": "avian/right_index_finger",
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
