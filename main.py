@@ -38,7 +38,8 @@ def sd_change_listener(table, key, value, isNew):
         logging.info("Updated hand detection target")
 
 
-sd = SmartDashboard("localhost", SD_DEFAULTS, sd_change_listener, "vision/max_num_hands")
+sd = SmartDashboard("localhost", SD_DEFAULTS, sd_change_listener, "avian/max_num_hands")
+sd.set("avian/detections", ",".join(SD_DETECTIONS))
 
 hands = mediapipe.solutions.hands.Hands(max_num_hands=int(sd.get("avian/max_num_hands")))
 
