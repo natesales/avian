@@ -17,7 +17,6 @@ SD_DEFAULTS = {
 
     # Immutable
     "vision/fps": 0,
-    "vision/frame_processing_time": 0,
     "vision/detected_hands": 0,
     "vision/calibrated": False,
 }
@@ -129,11 +128,9 @@ while True:
             sd.set(f"vision/right_{detection}", False)
 
     c_time = time.time()
-    frame_processing_time = c_time - p_time
-    fps = 1 / frame_processing_time
+    fps = 1 / (c_time - p_time)
     p_time = c_time
     sd.set("vision/fps", fps)
-    sd.set("vision/frame_processing_time", frame_processing_time * 1000)  # convert to milliseconds
 
     cv2.namedWindow("Image", cv2.WINDOW_NORMAL)
     cv2.imshow("Image", img)
