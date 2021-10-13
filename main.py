@@ -19,6 +19,7 @@ SD_DEFAULTS = {
     "vision/fps": 0,
     "vision/frame_processing_time": 0,
     "vision/detected_hands": 0,
+    "vision/calibrated": False,
 }
 
 SD_DETECTIONS = ["pinch", "fist", "middle_finger"]
@@ -71,6 +72,12 @@ while True:
             handedness = "Unknown"
             if results.multi_handedness:
                 handedness = results.multi_handedness[idx].classification[0].label
+
+            # Calibration
+            if not sd.get("vision/calibrated"):
+                if handedness == gestures.Hand.LEFT:
+                    sd.set("vision/invert_horizontal", True)
+            sd.set("vision/calibrated", True)
 
             # Pinch detection
             index_thumb_pinch = gestures.pinch(
