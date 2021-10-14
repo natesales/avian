@@ -1,3 +1,4 @@
+import collections
 import logging
 import sys
 import time
@@ -11,6 +12,9 @@ from classifiers import gestures
 
 NETWORKTABLES_SERVER = sys.argv[1]
 logging.info(f"Using NetworkTables server {NETWORKTABLES_SERVER}")
+
+POSE_CACHE_SIZE = 20  # Cache last 10 hand positions
+DRAW = False  # Display graphics on screen
 
 SD_DEFAULTS = {
     "avian/max_num_hands": 2,
@@ -50,6 +54,9 @@ hands = mediapipe.solutions.hands.Hands(max_num_hands=int(sd.get("avian/max_num_
 results = None
 p_time = 0
 
+left_hand_poses = collections.deque(maxlen=POSE_CACHE_SIZE)
+right_hand_poses = collections.deque(maxlen=POSE_CACHE_SIZE)
+
 while True:
     success, img = cap.read()
     if not success:
@@ -68,14 +75,23 @@ while True:
 
     if results.multi_hand_landmarks:
         sd.set("avian/detected_hands", len(results.multi_hand_landmarks))
-        for idx, handLms in enumerate(results.multi_hand_landmarks):
+        for idx, hand_landmarks in enumerate(results.multi_hand_landmarks):
             # Draw hand matrix
-            mediapipe.solutions.drawing_utils.draw_landmarks(img, handLms, mediapipe.solutions.hands.HAND_CONNECTIONS)
+            if DRAW:
+                mediapipe.solutions.drawing_utils.draw_landmarks(img, hand_landmarks,
+                                                                 mediapipe.solutions.hands.HAND_CONNECTIONS)
 
             # Detect left/right hand
             handedness = "Unknown"
             if results.multi_handedness:
                 handedness = results.multi_handedness[idx].classification[0].label
+
+            # Add to pose cache
+            hand_pose = gestures.hand_pose(hand_landmarks, w, h)
+            if handedness == gestures.Hand.LEFT:
+                left_hand_poses.append(hand_pose)
+            elif handedness == gestures.Hand.RIGHT:
+                right_hand_poses.append(hand_pose)
 
             # Calibration
             if not sd.get("avian/calibrated"):
@@ -85,7 +101,7 @@ while True:
 
             # Pinch detection
             index_thumb_pinch = gestures.pinch(
-                handLms,
+                hand_landmarks,
                 mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
                 mediapipe.solutions.hands.HandLandmark.THUMB_TIP,
                 int(sd.get("avian/pinch_proximity_radius")),
@@ -98,36 +114,37 @@ while True:
                 sd.set("avian/right_pinch", index_thumb_pinch)
 
             # Draw pinch radii
-            for digit in [mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
-                          mediapipe.solutions.hands.HandLandmark.THUMB_TIP]:
-                if handedness == gestures.Hand.LEFT:
-                    color = (255, 0, 0)
-                elif handedness == gestures.Hand.RIGHT:
-                    color = (0, 0, 255)
-                else:
-                    color = (255, 255, 255)
+            if DRAW:
+                for digit in [mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
+                              mediapipe.solutions.hands.HandLandmark.THUMB_TIP]:
+                    if handedness == gestures.Hand.LEFT:
+                        color = (255, 0, 0)
+                    elif handedness == gestures.Hand.RIGHT:
+                        color = (0, 0, 255)
+                    else:
+                        color = (255, 255, 255)
 
-                lm = handLms.landmark[digit]
-                cv2.circle(img, (int(lm.x * w), int(lm.y * h)),
-                           int(sd.get("avian/pinch_proximity_radius")),
-                           color, thickness=2)
+                    lm = hand_landmarks.landmark[digit]
+                    cv2.circle(img, (int(lm.x * w), int(lm.y * h)),
+                               int(sd.get("avian/pinch_proximity_radius")),
+                               color, thickness=2)
 
             # Detect middle finger
-            middle_finger = gestures.middle_finger(handLms)
+            middle_finger = gestures.middle_finger(hand_landmarks)
             if handedness == gestures.Hand.LEFT:
                 sd.set("avian/left_middle_finger", middle_finger)
             elif handedness == gestures.Hand.RIGHT:
                 sd.set("avian/right_middle_finger", middle_finger)
 
             # Detect index finger
-            index_finger = gestures.index_finger(handLms)
+            index_finger = gestures.index_finger(hand_landmarks)
             if handedness == gestures.Hand.LEFT:
                 sd.set("avian/left_index_finger", index_finger)
             elif handedness == gestures.Hand.RIGHT:
                 sd.set("avian/right_index_finger", index_finger)
 
             # Fist detection
-            fist = gestures.fist(handLms, h)
+            fist = gestures.fist(hand_landmarks, h)
             if handedness == gestures.Hand.LEFT:
                 sd.set("avian/left_fist", fist)
             elif handedness == gestures.Hand.RIGHT:
@@ -144,6 +161,9 @@ while True:
     p_time = c_time
     sd.set("avian/fps", fps)
 
-    cv2.namedWindow("Image", cv2.WINDOW_NORMAL)
-    cv2.imshow("Image", img)
-    cv2.waitKey(1)
+    print(left_hand_poses, "  ", right_hand_poses)
+
+    if DRAW:
+        cv2.namedWindow("Image", cv2.WINDOW_NORMAL)
+        cv2.imshow("Image", img)
+        cv2.waitKey(1)

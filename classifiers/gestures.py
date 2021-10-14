@@ -8,18 +8,47 @@ class Hand:
     RIGHT = "Right"
 
 
+class Axis:
+    X = "x"
+    Y = "y"
+
+
 def circle_intersection(x0, y0, x1, y1, radius) -> bool:
     return math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2) < (radius * 2)
 
 
-def average_finger_y(
+def average_finger(
         landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList,
         fingers,
-        height: int):
-    average_y = 0
+        scalar: int,
+        axis: str):
+    average = 0
     for fingertip in fingers:
-        average_y += int(height * landmarks.landmark[fingertip].y)
-    return int(average_y / len(fingers))
+        if axis == Axis.X:
+            average += int(scalar * landmarks.landmark[fingertip].x)
+        elif axis == Axis.Y:
+            average += int(scalar * landmarks.landmark[fingertip].y)
+        else:
+            raise AttributeError("Unknown axis, must be X or Y")
+    return int(average / len(fingers))
+
+
+def hand_pose(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList, width: int, height: int):
+    """Get the overall average hand position as a single point"""
+
+    all_fingers = [
+        mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
+        mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_TIP,
+        mediapipe.solutions.hands.HandLandmark.RING_FINGER_TIP,
+        mediapipe.solutions.hands.HandLandmark.PINKY_TIP
+    ]
+
+    avg_x, avg_y = 0, 0
+    for finger in all_fingers:
+        avg_x += int(width * landmarks.landmark[finger].x)
+        avg_y += int(height * landmarks.landmark[finger].y)
+
+    return int(avg_x / len(all_fingers)), int(avg_y / len(all_fingers))
 
 
 def pinch(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList,
@@ -61,12 +90,12 @@ def fist(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkL
     """
 
     # Average of all fingers
-    fingertip_average_y = average_finger_y(landmarks, [
+    fingertip_average_y = average_finger(landmarks, [
         mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
         mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_TIP,
         mediapipe.solutions.hands.HandLandmark.RING_FINGER_TIP,
         mediapipe.solutions.hands.HandLandmark.PINKY_TIP
-    ], height)
+    ], height, Axis.Y)
     middle_finger_base_y = int(height * landmarks.landmark[mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_MCP].y)
     wrist_y = int(height * landmarks.landmark[mediapipe.solutions.hands.HandLandmark.WRIST].y)
 
