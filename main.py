@@ -1,4 +1,5 @@
 import logging
+import sys
 import time
 
 import cv2
@@ -7,6 +8,9 @@ import numpy
 
 from smartdashboard import SmartDashboard
 from classifiers import gestures
+
+NETWORKTABLES_SERVER = sys.argv[1]
+logging.info(f"Using NetworkTables server {NETWORKTABLES_SERVER}")
 
 SD_DEFAULTS = {
     "avian/max_num_hands": 2,
@@ -38,7 +42,7 @@ def sd_change_listener(table, key, value, isNew):
         logging.info("Updated hand detection target")
 
 
-sd = SmartDashboard("localhost", SD_DEFAULTS, sd_change_listener, "avian/max_num_hands")
+sd = SmartDashboard(NETWORKTABLES_SERVER, SD_DEFAULTS, sd_change_listener, "avian/max_num_hands")
 sd.set("avian/detections", ",".join(SD_DETECTIONS))
 
 hands = mediapipe.solutions.hands.Hands(max_num_hands=int(sd.get("avian/max_num_hands")))
