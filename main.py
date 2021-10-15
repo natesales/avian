@@ -7,7 +7,7 @@ import cv2
 import mediapipe
 import numpy
 
-from classifiers import Hand
+from classifiers import Hand, GESTURES
 from classifiers import pose
 from classifiers.classify import Classifier
 from smartdashboard import SmartDashboard
@@ -15,9 +15,6 @@ from smartdashboard import SmartDashboard
 NETWORKTABLES_SERVER = sys.argv[1]
 logging.info(f"Using NetworkTables server {NETWORKTABLES_SERVER}")
 
-detections_available = ["pinch", "fist", "middle_finger", "index_finger"]
-
-DETECTIONS_ENABLED = detections_available  # Detections can be disabled for performance improvements
 DETECT_HAND_POSE = True  # Detect historical hand pose
 POSE_CACHE_SIZE = 20  # Cache last 10 hand positions
 DRAW = True  # Display graphics on screen
@@ -35,7 +32,7 @@ SD_DEFAULTS = {
     "avian/calibrated": False,
 }
 
-for detection in detections_available:
+for detection in GESTURES:
     SD_DEFAULTS[f"avian/left_{detection}"] = False
     SD_DEFAULTS[f"avian/right_{detection}"] = False
 
@@ -52,7 +49,6 @@ def sd_change_listener(table, key, value, isNew):
 
 
 sd = SmartDashboard(NETWORKTABLES_SERVER, SD_DEFAULTS, sd_change_listener, "avian/max_num_hands")
-sd.set("avian/detections", ",".join(detections_available))
 
 width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
 height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
@@ -84,18 +80,34 @@ while True:
     if results.multi_hand_landmarks:
         sd.set("avian/detected_hands", len(results.multi_hand_landmarks))
         for idx, hand_landmarks in enumerate(results.multi_hand_landmarks):
-            # Draw hand matrix
-            if DRAW:
-                mediapipe.solutions.drawing_utils.draw_landmarks(img, hand_landmarks,
-                                                                 mediapipe.solutions.hands.HAND_CONNECTIONS)
-
             # Detect left/right hand
             handedness = "Unknown"
             if results.multi_handedness:
                 handedness = results.multi_handedness[idx].classification[0].label.lower()
 
+            # Draw hand matrix
+            if DRAW:
+                mediapipe.solutions.drawing_utils.draw_landmarks(img, hand_landmarks,
+                                                                 mediapipe.solutions.hands.HAND_CONNECTIONS)
+
+                # Draw pinch radii
+                for digit in [mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
+                              mediapipe.solutions.hands.HandLandmark.THUMB_TIP]:
+                    if handedness == Hand.LEFT:
+                        color = (255, 0, 0)
+                    elif handedness == Hand.RIGHT:
+                        color = (0, 0, 255)
+                    else:
+                        color = (255, 255, 255)
+
+                    lm = hand_landmarks.landmark[digit]
+                    cv2.circle(img, (int(lm.x * w), int(lm.y * h)),
+                               int(sd.get("avian/pinch_proximity_radius")),
+                               color, thickness=2)
+
             # Calibration
             if not sd.get("avian/calibrated"):
+                # If the first hand seen is the left (actually the right), flip the image
                 if handedness == Hand.LEFT:
                     sd.set("avian/invert_horizontal", True)
             sd.set("avian/calibrated", True)
@@ -113,12 +125,18 @@ while True:
             if gesture != "":
                 sd.set(f"avian/{handedness}_{gesture}", True)
 
+            # Set all other gestures to false
+            for g in GESTURES:
+                if g != gesture:
+                    sd.set(f"avian/{handedness}_{g}", False)
+
     else:  # No hands detected
         sd.set("avian/detected_hands", 0)
-        for detection in detections_available:
+        for detection in GESTURES:
             sd.set(f"avian/left_{detection}", False)
             sd.set(f"avian/right_{detection}", False)
 
+    # Calculate FPS
     c_time = time.time()
     fps = 1 / (c_time - p_time)
     p_time = c_time
