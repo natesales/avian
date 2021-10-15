@@ -7,10 +7,7 @@ import cv2
 import mediapipe
 import numpy
 
-from classifiers import Hand
-from classifiers import gestures
-from classifiers import pose
-
+from classifiers import pose, gestures, Hand
 from smartdashboard import SmartDashboard
 
 NETWORKTABLES_SERVER = sys.argv[1]
@@ -41,6 +38,7 @@ for detection in detections_available:
     SD_DEFAULTS[f"avian/right_{detection}"] = False
 
 cap = cv2.VideoCapture(0)
+fps_deque = collections.deque(maxlen=10)
 
 
 def sd_change_listener(table, key, value, isNew):
@@ -61,6 +59,63 @@ p_time = 0
 
 left_hand_poses = collections.deque(maxlen=POSE_CACHE_SIZE)
 right_hand_poses = collections.deque(maxlen=POSE_CACHE_SIZE)
+
+
+def classify(landmarks):
+    # Pinch detection
+    if "pinch" in DETECTIONS_ENABLED:
+        index_thumb_pinch = gestures.pinch(
+            hand_landmarks,
+            mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
+            mediapipe.solutions.hands.HandLandmark.THUMB_TIP,
+            int(sd.get("avian/pinch_proximity_radius")),
+            w,
+            h
+        )
+        if handedness == Hand.LEFT:
+            sd.set("avian/left_pinch", index_thumb_pinch)
+        elif handedness == Hand.RIGHT:
+            sd.set("avian/right_pinch", index_thumb_pinch)
+
+        # Draw pinch radii
+        if DRAW:
+            for digit in [mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
+                          mediapipe.solutions.hands.HandLandmark.THUMB_TIP]:
+                if handedness == Hand.LEFT:
+                    color = (255, 0, 0)
+                elif handedness == Hand.RIGHT:
+                    color = (0, 0, 255)
+                else:
+                    color = (255, 255, 255)
+
+                lm = hand_landmarks.landmark[digit]
+                cv2.circle(img, (int(lm.x * w), int(lm.y * h)),
+                           int(sd.get("avian/pinch_proximity_radius")),
+                           color, thickness=2)
+
+    # Detect middle finger
+    if "middle_finger" in DETECTIONS_ENABLED:
+        middle_finger = gestures.middle_finger(hand_landmarks)
+        if handedness == Hand.LEFT:
+            sd.set("avian/left_middle_finger", middle_finger)
+        elif handedness == Hand.RIGHT:
+            sd.set("avian/right_middle_finger", middle_finger)
+
+    # Detect index finger
+    if "index_finger" in DETECTIONS_ENABLED:
+        index_finger = gestures.index_finger(hand_landmarks)
+        if handedness == Hand.LEFT:
+            sd.set("avian/left_index_finger", index_finger)
+        elif handedness == Hand.RIGHT:
+            sd.set("avian/right_index_finger", index_finger)
+
+    # Fist detection
+    if "fist" in DETECTIONS_ENABLED:
+        fist = gestures.fist(hand_landmarks, h)
+        if handedness == Hand.LEFT:
+            sd.set("avian/left_fist", fist)
+        elif handedness == Hand.RIGHT:
+            sd.set("avian/right_fist", fist)
 
 while True:
     success, img = cap.read()
@@ -105,60 +160,8 @@ while True:
                 elif handedness == Hand.RIGHT:
                     right_hand_poses.append(hand_pose)
 
-            # Pinch detection
-            if "pinch" in DETECTIONS_ENABLED:
-                index_thumb_pinch = gestures.pinch(
-                    hand_landmarks,
-                    mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
-                    mediapipe.solutions.hands.HandLandmark.THUMB_TIP,
-                    int(sd.get("avian/pinch_proximity_radius")),
-                    w,
-                    h
-                )
-                if handedness == Hand.LEFT:
-                    sd.set("avian/left_pinch", index_thumb_pinch)
-                elif handedness == Hand.RIGHT:
-                    sd.set("avian/right_pinch", index_thumb_pinch)
-
-                # Draw pinch radii
-                if DRAW:
-                    for digit in [mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
-                                  mediapipe.solutions.hands.HandLandmark.THUMB_TIP]:
-                        if handedness == Hand.LEFT:
-                            color = (255, 0, 0)
-                        elif handedness == Hand.RIGHT:
-                            color = (0, 0, 255)
-                        else:
-                            color = (255, 255, 255)
-
-                        lm = hand_landmarks.landmark[digit]
-                        cv2.circle(img, (int(lm.x * w), int(lm.y * h)),
-                                   int(sd.get("avian/pinch_proximity_radius")),
-                                   color, thickness=2)
-
-            # Detect middle finger
-            if "middle_finger" in DETECTIONS_ENABLED:
-                middle_finger = gestures.middle_finger(hand_landmarks)
-                if handedness == Hand.LEFT:
-                    sd.set("avian/left_middle_finger", middle_finger)
-                elif handedness == Hand.RIGHT:
-                    sd.set("avian/right_middle_finger", middle_finger)
-
-            # Detect index finger
-            if "index_finger" in DETECTIONS_ENABLED:
-                index_finger = gestures.index_finger(hand_landmarks)
-                if handedness == Hand.LEFT:
-                    sd.set("avian/left_index_finger", index_finger)
-                elif handedness == Hand.RIGHT:
-                    sd.set("avian/right_index_finger", index_finger)
-
-            # Fist detection
-            if "fist" in DETECTIONS_ENABLED:
-                fist = gestures.fist(hand_landmarks, h)
-                if handedness == Hand.LEFT:
-                    sd.set("avian/left_fist", fist)
-                elif handedness == Hand.RIGHT:
-                    sd.set("avian/right_fist", fist)
+            # Detect hand gesture
+            gesture = classify(hand_landmarks)
 
     else:  # No hands detected
         sd.set("avian/detected_hands", 0)
@@ -169,9 +172,8 @@ while True:
     c_time = time.time()
     fps = 1 / (c_time - p_time)
     p_time = c_time
-    sd.set("avian/fps", fps)
-
-    # print(left_hand_poses, "  ", right_hand_poses)
+    fps_deque.append(fps)
+    sd.set("avian/fps", int(sum(fps_deque) / len(fps_deque)))
 
     if DRAW:
         cv2.namedWindow("Image", cv2.WINDOW_NORMAL)

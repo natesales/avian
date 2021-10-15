@@ -1,7 +1,6 @@
 import mediapipe
 
-from . import circle_intersection
-from . import pose, models
+from . import pose, models, Direction, circle_intersection
 
 
 def pinch(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList,
@@ -71,15 +70,12 @@ def middle_finger(landmarks: mediapipe.framework.formats.landmark_pb2.Normalized
     """
 
     # Validate that all other fingers are below the middle finger
-    middle_finger_segment_y = landmarks.landmark[mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_PIP].y
-    for finger in [
+    if not pose.lm_threshold(landmarks, mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_PIP, [
         mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
         mediapipe.solutions.hands.HandLandmark.RING_FINGER_TIP,
         mediapipe.solutions.hands.HandLandmark.PINKY_TIP
-    ]:
-        finger_lm_y = landmarks.landmark[finger].y
-        if finger_lm_y < middle_finger_segment_y:
-            return False
+    ], Direction.BELOW):
+        return False
 
     # Validate the middle finger is extended
     return pose.finger_extended(landmarks, models.Finger.MIDDLE)
