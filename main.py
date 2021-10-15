@@ -1,5 +1,4 @@
 import collections
-import logging
 import sys
 import time
 
@@ -13,7 +12,7 @@ from classifiers.classify import Classifier
 from smartdashboard import SmartDashboard
 
 NETWORKTABLES_SERVER = sys.argv[1]
-logging.info(f"Using NetworkTables server {NETWORKTABLES_SERVER}")
+print(f"Using NetworkTables server {NETWORKTABLES_SERVER}")
 
 DETECT_HAND_POSE = True  # Detect historical hand pose
 POSE_CACHE_SIZE = 20  # Cache last 10 hand positions
@@ -45,13 +44,15 @@ def sd_change_listener(table, key, value, isNew):
     if key == "avian/max_num_hands":
         global hands
         hands = mediapipe.solutions.hands.Hands(max_num_hands=int(sd.get("avian/max_num_hands")))
-        logging.info("Updated hand detection target")
 
 
 sd = SmartDashboard(NETWORKTABLES_SERVER, SD_DEFAULTS, sd_change_listener, "avian/max_num_hands")
 
 width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
 height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+cam_fps = cap.get(cv2.CAP_PROP_FPS)
+print(f"Opened {width}x{height}@{cam_fps} camera")
+
 classifier = Classifier(width, height, int(sd.get("avian/pinch_proximity_radius")))
 hands = mediapipe.solutions.hands.Hands(max_num_hands=int(sd.get("avian/max_num_hands")))
 
@@ -64,7 +65,8 @@ right_hand_poses = collections.deque(maxlen=POSE_CACHE_SIZE)
 while True:
     success, img = cap.read()
     if not success:
-        logging.fatal("Unable to read from video capture device")
+        print("Unable to read from video capture device")
+        exit(1)
     if sd.get("avian/invert_vertical"):
         img = cv2.flip(img, 0)
     if sd.get("avian/invert_horizontal"):
