@@ -24,6 +24,4 @@ class Classifier:
             return Gesture.MIDDLE_FINGER
         elif gestures.index_finger(landmarks):
             return Gesture.INDEX_FINGER
-        elif gestures.fist(landmarks, self.image_height):
-            return Gesture.FIST
         return ""

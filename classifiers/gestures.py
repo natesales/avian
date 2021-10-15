@@ -32,35 +32,6 @@ def pinch(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmark
     )
 
 
-def fist(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList, height: int) -> bool:
-    """Detect fist gesture
-
-    :param landmarks: List of landmarks in hand
-    :param height: Image height
-
-    :returns: True if the hand is making a fist
-    """
-
-    # Average of all fingers
-    _, fingertip_average_y = pose.lm_avg(landmarks, [
-        mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
-        mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_TIP,
-        mediapipe.solutions.hands.HandLandmark.RING_FINGER_TIP,
-        mediapipe.solutions.hands.HandLandmark.PINKY_TIP
-    ], 0, height)  # Width is ignored
-    middle_finger_base_y = int(height * landmarks.landmark[mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_MCP].y)
-    wrist_y = int(height * landmarks.landmark[mediapipe.solutions.hands.HandLandmark.WRIST].y)
-
-    # If the full hand isn't visible, we can't detect a fist
-    if middle_finger_base_y == 0 or wrist_y == 0 or fingertip_average_y == 0:
-        return False
-
-    if middle_finger_base_y < wrist_y:  # Hand facing up
-        return fingertip_average_y > middle_finger_base_y
-    else:  # Hand facing down
-        return fingertip_average_y < middle_finger_base_y
-
-
 def middle_finger(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList) -> bool:
     """Detect middle finger
 
