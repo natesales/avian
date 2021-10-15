@@ -146,4 +146,6 @@ while True:
     if DRAW:
         cv2.namedWindow("Image", cv2.WINDOW_NORMAL)
         cv2.imshow("Image", img)
-        cv2.waitKey(1)
+        if cv2.waitKey(1) == 27:
+            cv2.destroyAllWindows()
+            exit(0)
