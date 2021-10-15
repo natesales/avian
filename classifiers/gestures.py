@@ -60,16 +60,13 @@ def index_finger(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedL
     :returns: True if the hand is making a index finger raised gesture
     """
 
-    # Validate that all other fingers are below the middle finger
-    index_finger_segment_y = landmarks.landmark[mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_PIP].y
-    for finger in [
+    # Validate that all other fingers are below the index finger
+    if not pose.lm_threshold(landmarks, mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_PIP, [
         mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_TIP,
         mediapipe.solutions.hands.HandLandmark.RING_FINGER_TIP,
         mediapipe.solutions.hands.HandLandmark.PINKY_TIP
-    ]:
-        finger_lm_y = landmarks.landmark[finger].y
-        if finger_lm_y < index_finger_segment_y:
-            return False
+    ], Direction.BELOW):
+        return False
 
     # Validate the index finger is extended
     return pose.finger_extended(landmarks, models.Finger.INDEX)
