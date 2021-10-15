@@ -2,8 +2,8 @@ import math
 
 
 class Hand:
-    LEFT = "Left"
-    RIGHT = "Right"
+    LEFT = "left"
+    RIGHT = "right"
 
 
 class Axis:
@@ -12,8 +12,15 @@ class Axis:
 
 
 class Direction:
-    ABOVE = "Above"
-    BELOW = "Below"
+    ABOVE = "above"
+    BELOW = "below"
+
+
+class Gesture:
+    PINCH = "pinch"
+    FIST = "fist"
+    MIDDLE_FINGER = "middle_finger"
+    INDEX_FINGER = "index_finger"
 
 
 def circle_intersection(x0, y0, x1, y1, radius) -> bool:
