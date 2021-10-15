@@ -1,54 +1,7 @@
-import math
-
 import mediapipe
 
-
-class Hand:
-    LEFT = "Left"
-    RIGHT = "Right"
-
-
-class Axis:
-    X = "x"
-    Y = "y"
-
-
-def circle_intersection(x0, y0, x1, y1, radius) -> bool:
-    return math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2) < (radius * 2)
-
-
-def average_finger(
-        landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList,
-        fingers,
-        scalar: int,
-        axis: str):
-    average = 0
-    for fingertip in fingers:
-        if axis == Axis.X:
-            average += int(scalar * landmarks.landmark[fingertip].x)
-        elif axis == Axis.Y:
-            average += int(scalar * landmarks.landmark[fingertip].y)
-        else:
-            raise AttributeError("Unknown axis, must be X or Y")
-    return int(average / len(fingers))
-
-
-def hand_pose(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList, width: int, height: int):
-    """Get the overall average hand position as a single point"""
-
-    all_fingers = [
-        mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
-        mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_TIP,
-        mediapipe.solutions.hands.HandLandmark.RING_FINGER_TIP,
-        mediapipe.solutions.hands.HandLandmark.PINKY_TIP
-    ]
-
-    avg_x, avg_y = 0, 0
-    for finger in all_fingers:
-        avg_x += int(width * landmarks.landmark[finger].x)
-        avg_y += int(height * landmarks.landmark[finger].y)
-
-    return int(avg_x / len(all_fingers)), int(avg_y / len(all_fingers))
+from . import pose
+from . import Axis, circle_intersection
 
 
 def pinch(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList,
@@ -90,7 +43,7 @@ def fist(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkL
     """
 
     # Average of all fingers
-    fingertip_average_y = average_finger(landmarks, [
+    fingertip_average_y = pose.lm_avg(landmarks, [
         mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
         mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_TIP,
         mediapipe.solutions.hands.HandLandmark.RING_FINGER_TIP,
@@ -167,3 +120,5 @@ def index_finger(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedL
     ]
     # If the list isn't sorted in ascending order, then the finger isn't extended vertically
     return index_finger_segments == sorted(index_finger_segments)
+
+# def finger_extension(landmarks, finger: Finger)
