@@ -5,7 +5,7 @@ import mediapipe
 
 
 def hand_vector(points: collections.deque):
-    pass # TODO
+    pass  # TODO
 
 
 def lm_avg(
@@ -38,3 +38,17 @@ def hand_pose(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLand
         mediapipe.solutions.hands.HandLandmark.RING_FINGER_TIP,
         mediapipe.solutions.hands.HandLandmark.PINKY_TIP
     ], width, height)
+
+
+def finger_extended(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList,
+                    finger: List[mediapipe.solutions.hands.HandLandmark]) -> bool:
+    """Determine if a finger is extended vertically
+
+    :param landmarks: List of landmarks in hand
+    :param finger: Finger model
+
+    :returns: True if the finger is extended
+    """
+
+    segments = [landmarks.landmark[segment].y for segment in finger]
+    return segments == sorted(segments)

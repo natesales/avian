@@ -1,7 +1,7 @@
 import mediapipe
 
-from . import pose
-from . import Axis, circle_intersection
+from . import circle_intersection
+from . import pose, models
 
 
 def pinch(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList,
@@ -48,7 +48,7 @@ def fist(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkL
         mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_TIP,
         mediapipe.solutions.hands.HandLandmark.RING_FINGER_TIP,
         mediapipe.solutions.hands.HandLandmark.PINKY_TIP
-    ], 0, height) # Width is ignored
+    ], 0, height)  # Width is ignored
     middle_finger_base_y = int(height * landmarks.landmark[mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_MCP].y)
     wrist_y = int(height * landmarks.landmark[mediapipe.solutions.hands.HandLandmark.WRIST].y)
 
@@ -82,14 +82,7 @@ def middle_finger(landmarks: mediapipe.framework.formats.landmark_pb2.Normalized
             return False
 
     # Validate the middle finger is extended
-    middle_finger_segments = [
-        landmarks.landmark[mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_TIP].y,
-        landmarks.landmark[mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_DIP].y,
-        landmarks.landmark[mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_PIP].y,
-        landmarks.landmark[mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_MCP].y,
-    ]
-    # If the list isn't sorted in ascending order, then the finger isn't extended vertically
-    return middle_finger_segments == sorted(middle_finger_segments)
+    return pose.finger_extended(landmarks, models.Finger.MIDDLE)
 
 
 def index_finger(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList) -> bool:
@@ -112,13 +105,4 @@ def index_finger(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedL
             return False
 
     # Validate the index finger is extended
-    index_finger_segments = [
-        landmarks.landmark[mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP].y,
-        landmarks.landmark[mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_DIP].y,
-        landmarks.landmark[mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_PIP].y,
-        landmarks.landmark[mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_MCP].y,
-    ]
-    # If the list isn't sorted in ascending order, then the finger isn't extended vertically
-    return index_finger_segments == sorted(index_finger_segments)
-
-# def finger_extension(landmarks, finger: Finger)
+    return pose.finger_extended(landmarks, models.Finger.INDEX)
