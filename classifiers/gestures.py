@@ -43,12 +43,12 @@ def fist(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkL
     """
 
     # Average of all fingers
-    fingertip_average_y = pose.lm_avg(landmarks, [
+    _, fingertip_average_y = pose.lm_avg(landmarks, [
         mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
         mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_TIP,
         mediapipe.solutions.hands.HandLandmark.RING_FINGER_TIP,
         mediapipe.solutions.hands.HandLandmark.PINKY_TIP
-    ], height, Axis.Y)
+    ], 0, height) # Width is ignored
     middle_finger_base_y = int(height * landmarks.landmark[mediapipe.solutions.hands.HandLandmark.MIDDLE_FINGER_MCP].y)
     wrist_y = int(height * landmarks.landmark[mediapipe.solutions.hands.HandLandmark.WRIST].y)
 
