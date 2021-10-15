@@ -18,12 +18,11 @@ class Direction:
 
 class Gesture:
     PINCH = "pinch"
-    FIST = "fist"
     MIDDLE_FINGER = "middle_finger"
     INDEX_FINGER = "index_finger"
 
 
-GESTURES = ["pinch", "fist", "middle_finger", "index_finger"]
+GESTURES = ["pinch", "middle_finger", "index_finger"]
 
 
 def circle_intersection(x0, y0, x1, y1, radius) -> bool:
