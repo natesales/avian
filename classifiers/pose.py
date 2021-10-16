@@ -1,5 +1,5 @@
 import collections
-from typing import List
+from typing import List, Tuple
 
 import mediapipe
 
@@ -13,8 +13,8 @@ def hand_vector(points: collections.deque):
 def lm_avg(
         landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList,
         targets: List[mediapipe.solutions.hands.HandLandmark],
-        height: int,
-        width: int) -> (int, int):
+        width: int,
+        height: int) -> Tuple[int, int]:
     """Find average pose of multiple hand landmarks
     :param landmarks: List of landmarks in hand
     :param targets: List of hand landmarks to target
@@ -24,9 +24,11 @@ def lm_avg(
     """
     x, y = 0, 0
     for target_lm in targets:
-        x += int(width * landmarks.landmark[target_lm].x)
-        y += int(height * landmarks.landmark[target_lm].y)
-    return int(x / len(targets)), int(y / len(targets))
+        # landmarks are betweeen 0 and 1
+        x += landmarks.landmark[target_lm].x
+        y += landmarks.landmark[target_lm].y
+    
+    return int(x / len(targets) * width), int(y / len(targets) * height)
 
 
 def hand_pose(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList, width: int, height: int):
