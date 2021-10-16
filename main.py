@@ -15,7 +15,9 @@ NETWORKTABLES_SERVER = sys.argv[1]
 print(f"Using NetworkTables server {NETWORKTABLES_SERVER}")
 
 DETECT_HAND_POSE = True  # Detect historical hand pose
-POSE_CACHE_SIZE = 20  # Cache last N hand positions
+# TODO: Replace collections.deque with own ring buffer class with internal sum counter
+# TODO: Make POSE_CACHE_SIZE smartdashboard tunable
+POSE_CACHE_SIZE = 5  # Cache last N hand positions
 DRAW = True  # Display graphics on screen
 DRAW_TO_ORIGIN = True
 
@@ -97,7 +99,7 @@ while True:
     backward_thresh = int(h / 2) + middle_deadzone
     forward_max = top_bottom_deadzone
     backward_max = h - top_bottom_deadzone
-    cv2.line(img, (int(w / 2), 0), (int(w / 2), h), color, size)  # Vertical half
+    # cv2.line(img, (int(w / 2), 0), (int(w / 2), h), color, size)  # Vertical line
     cv2.line(img, (0, forward_thresh), (w, forward_thresh), color, size)  # Forward area
     cv2.line(img, (0, backward_thresh), (w, backward_thresh), color, size)  # Backward area
     cv2.line(img, (0, forward_max), (w, forward_max), color, size)  # Forward max
@@ -178,16 +180,27 @@ while True:
             #     # print(p_time)
 
             # Tank drive
-            lm_y = hand_landmarks.landmark[mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP].y * h
-            if lm_y < forward_thresh:
-                sd.set(f"avian/{handedness}_tank", (lm_y - forward_thresh) / (forward_max - forward_thresh))
-            elif lm_y > backward_thresh:
-                sd.set(f"avian/{handedness}_tank", -1 * ((lm_y - backward_thresh) / (backward_max - backward_thresh)))
+            if handedness == Hand.LEFT:
+                poses = left_hand_poses
+            elif handedness == Hand.RIGHT:
+                poses = right_hand_poses
+            else:
+                raise RuntimeError(f"Invalid handedness value: unexpected \"{handedness}\"")
+            avg_y = int(sum([p[1] for p in poses]) / len(poses))  # p[1] for y coordinate in (x, y) tuple
+            if DRAW:
+                x = int(w / 2)
+                cv2.drawMarker(img, ((x - 15 if handedness == Hand.LEFT else x + 15), avg_y), color, thickness=size)
+            if avg_y < forward_thresh:
+                sd.set(f"avian/{handedness}_tank", (avg_y - forward_thresh) / (forward_max - forward_thresh))
+            elif avg_y > backward_thresh:
+                sd.set(f"avian/{handedness}_tank", -1 * ((avg_y - backward_thresh) / (backward_max - backward_thresh)))
             else:  # Deadzone
                 sd.set(f"avian/{handedness}_tank", 0)
 
     else:  # No hands detected
         sd.set("avian/detected_hands", 0)
+        sd.set(f"avian/left_tank", 0)
+        sd.set(f"avian/right_tank", 0)
         for detection in GESTURES:
             sd.set(f"avian/left_{detection}", False)
             sd.set(f"avian/right_{detection}", False)
@@ -198,10 +211,6 @@ while True:
     p_time = c_time
     fps_deque.append(fps)
     sd.set("avian/fps", int(sum(fps_deque) / len(fps_deque)))
-    cv2.putText(img, str(int(sum(fps_deque) / len(fps_deque))), (w - 100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
-                (255, 255, 255), 2, cv2.LINE_AA)
-    cv2.putText(img, str(swiped_distance), (w - 100, h - 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2,
-                cv2.LINE_AA)
 
     if DRAW:
         cv2.namedWindow("Image", cv2.WINDOW_NORMAL)
