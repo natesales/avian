@@ -34,8 +34,8 @@
               "_type": "Number Bar",
               "_source0": "network_table:///SmartDashboard/avian/fps",
               "_title": "avian/fps",
-              "Range/Min": 0,
-              "Range/Max": 200,
+              "Range/Min": 0.0,
+              "Range/Max": 200.0,
               "Range/Center": 0.0,
               "Visuals/Num tick marks": 5,
               "Visuals/Show text": true
@@ -61,8 +61,8 @@
               "_type": "Number Bar",
               "_source0": "network_table:///SmartDashboard/avian/detected_hands",
               "_title": "avian/detected_hands",
-              "Range/Min": 0,
-              "Range/Max": 10,
+              "Range/Min": 0.0,
+              "Range/Max": 10.0,
               "Range/Center": 0.0,
               "Visuals/Num tick marks": 5,
               "Visuals/Show text": true
@@ -218,6 +218,17 @@
                 }
               ]
             }
+          },
+          "2,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/avian/pose_cache_size",
+              "_title": "avian/pose_cache_size"
+            }
           }
         }
       }
@@ -236,9 +247,9 @@
     }
   ],
   "windowGeometry": {
-    "x": 914.0,
-    "y": 178.0,
-    "width": 1608.0,
-    "height": 853.0
+    "x": 1280.0,
+    "y": 32.0,
+    "width": 1280.0,
+    "height": 1408.0
   }
 }

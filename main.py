@@ -14,10 +14,8 @@ from smartdashboard import SmartDashboard
 NETWORKTABLES_SERVER = sys.argv[1]
 print(f"Using NetworkTables server {NETWORKTABLES_SERVER}")
 
+# TODO: move to smartdashboard
 DETECT_HAND_POSE = True  # Detect historical hand pose
-# TODO: Replace collections.deque with own ring buffer class with internal sum counter
-# TODO: Make POSE_CACHE_SIZE smartdashboard tunable
-POSE_CACHE_SIZE = 5  # Cache last N hand positions
 DRAW = True  # Display graphics on screen
 DRAW_TO_ORIGIN = True
 
@@ -27,6 +25,7 @@ SD_DEFAULTS = {
     "avian/invert_horizontal": False,
     "avian/invert_vertical": False,
     "avian/black_background": False,
+    "avian/pose_cache_size": 5,
 
     # Deadzones are in pixels above and below.
     # Not cumulative; the space between {forward,backward}_thresh is 2*deadzone)
@@ -67,8 +66,9 @@ hands = mediapipe.solutions.hands.Hands(max_num_hands=int(sd.get("avian/max_num_
 results = None
 p_time = 0
 
-left_hand_poses = collections.deque(maxlen=POSE_CACHE_SIZE)
-right_hand_poses = collections.deque(maxlen=POSE_CACHE_SIZE)
+pose_cache_size = int(sd.get("avian/pose_cache_size"))
+left_hand_poses = collections.deque(maxlen=pose_cache_size)
+right_hand_poses = collections.deque(maxlen=pose_cache_size)
 
 # testing
 swiped_distance = 0
@@ -83,6 +83,14 @@ while True:
     if sd.get("avian/invert_horizontal"):
         img = cv2.flip(img, 1)
     h, w, c = img.shape
+
+    # Resize pose caches if needed
+    if DETECT_HAND_POSE:
+        pose_cache_size = int(sd.get("avian/pose_cache_size"))
+        if pose_cache_size != left_hand_poses.maxlen:
+            left_hand_poses = collections.deque(left_hand_poses, maxlen=pose_cache_size)
+        if pose_cache_size != right_hand_poses.maxlen:
+            right_hand_poses = collections.deque(right_hand_poses, maxlen=pose_cache_size)
 
     results = hands.process(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
