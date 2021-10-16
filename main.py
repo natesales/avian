@@ -131,6 +131,11 @@ while True:
             if gesture != "":
                 sd.set(f"avian/{handedness}_{gesture}", True)
 
+            # Set all other gestures to false
+            for g in GESTURES:
+                if g != gesture:
+                    sd.set(f"avian/{handedness}_{g}", False)
+
             # draw line to origin
             if DRAW_TO_ORIGIN and len(right_hand_poses) > 0:
                 # print(right_hand_poses[0])
@@ -140,22 +145,17 @@ while True:
                     angle += numpy.pi
                 if angle < 0:
                     angle = 2 * numpy.pi + angle
-                angle *= (180/numpy.pi)
-                cv2.line(img, (int(lm.x * w), int(lm.y * h)), (int(w/2), int(h/2)), (255, 255, 255), 10)
+                angle *= (180 / numpy.pi)
+                cv2.line(img, (int(lm.x * w), int(lm.y * h)), (int(w / 2), int(h / 2)), (255, 255, 255), 10)
                 cv2.putText(img, str(angle), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
             if len(right_hand_poses) > 0:
-                startX, startY = right_hand_poses[len(right_hand_poses)-1]
+                startX, startY = right_hand_poses[len(right_hand_poses) - 1]
                 endX, endY = right_hand_poses[0]
                 distance_traveled = endX - startX
                 if distance_traveled > 100:
                     swiped_distance += 10
                 # print(p_time)
-
-            # Set all other gestures to false
-            for g in GESTURES:
-                if g != gesture:
-                    sd.set(f"avian/{handedness}_{g}", False)
 
     else:  # No hands detected
         sd.set("avian/detected_hands", 0)
@@ -169,8 +169,10 @@ while True:
     p_time = c_time
     fps_deque.append(fps)
     sd.set("avian/fps", int(sum(fps_deque) / len(fps_deque)))
-    cv2.putText(img, str(int(sum(fps_deque) / len(fps_deque))), (w-100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-    cv2.putText(img, str(swiped_distance), (w-100, h-100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+    cv2.putText(img, str(int(sum(fps_deque) / len(fps_deque))), (w - 100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                (255, 255, 255), 2, cv2.LINE_AA)
+    cv2.putText(img, str(swiped_distance), (w - 100, h - 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2,
+                cv2.LINE_AA)
 
     if DRAW:
         cv2.namedWindow("Image", cv2.WINDOW_NORMAL)
