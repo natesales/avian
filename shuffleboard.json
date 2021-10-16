@@ -189,7 +189,7 @@
           "0,0": {
             "size": [
               2,
-              3
+              4
             ],
             "content": {
               "_type": "List Layout",
@@ -215,6 +215,16 @@
                   "_type": "Toggle Button",
                   "_source0": "network_table:///SmartDashboard/avian/black_background",
                   "_title": "avian/black_background"
+                },
+                {
+                  "_type": "Toggle Button",
+                  "_source0": "network_table:///SmartDashboard/avian/draw",
+                  "_title": "avian/draw"
+                },
+                {
+                  "_type": "Toggle Button",
+                  "_source0": "network_table:///SmartDashboard/avian/detect_hand_pose",
+                  "_title": "avian/detect_hand_pose"
                 }
               ]
             }
@@ -247,9 +257,9 @@
     }
   ],
   "windowGeometry": {
-    "x": 1280.0,
-    "y": 32.0,
-    "width": 1280.0,
-    "height": 1408.0
+    "x": 571.0,
+    "y": 70.0,
+    "width": 2289.0,
+    "height": 1259.0
   }
 }

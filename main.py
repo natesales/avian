@@ -15,8 +15,6 @@ NETWORKTABLES_SERVER = sys.argv[1]
 print(f"Using NetworkTables server {NETWORKTABLES_SERVER}")
 
 # TODO: move to smartdashboard
-DETECT_HAND_POSE = True  # Detect historical hand pose
-DRAW = True  # Display graphics on screen
 DRAW_TO_ORIGIN = True
 
 SD_DEFAULTS = {
@@ -26,6 +24,8 @@ SD_DEFAULTS = {
     "avian/invert_vertical": False,
     "avian/black_background": False,
     "avian/pose_cache_size": 5,
+    "avian/draw": True,
+    "avian/detect_hand_pose": True,
 
     # Deadzones are in pixels above and below.
     # Not cumulative; the space between {forward,backward}_thresh is 2*deadzone)
@@ -84,8 +84,11 @@ while True:
         img = cv2.flip(img, 1)
     h, w, c = img.shape
 
+    draw = sd.get("avian/draw")
+    detect_hand_pose = sd.get("avian/detect_hand_pose")
+
     # Resize pose caches if needed
-    if DETECT_HAND_POSE:
+    if detect_hand_pose:
         pose_cache_size = int(sd.get("avian/pose_cache_size"))
         if pose_cache_size != left_hand_poses.maxlen:
             left_hand_poses = collections.deque(left_hand_poses, maxlen=pose_cache_size)
@@ -121,7 +124,7 @@ while True:
             if results.multi_handedness:
                 handedness = results.multi_handedness[idx].classification[0].label.lower()
 
-            if DRAW:
+            if draw:
                 # Draw hand matrix
                 mediapipe.solutions.drawing_utils.draw_landmarks(img, hand_landmarks,
                                                                  mediapipe.solutions.hands.HAND_CONNECTIONS)
@@ -149,7 +152,7 @@ while True:
             sd.set("avian/calibrated", True)
 
             # Add to pose cache
-            if DETECT_HAND_POSE:
+            if detect_hand_pose:
                 hand_pose = pose.hand_pose(hand_landmarks, w, h)
                 if handedness == Hand.LEFT:
                     left_hand_poses.append(hand_pose)
@@ -187,23 +190,25 @@ while True:
             #         swiped_distance += 10
             #     # print(p_time)
 
-            # Tank drive
-            if handedness == Hand.LEFT:
-                poses = left_hand_poses
-            elif handedness == Hand.RIGHT:
-                poses = right_hand_poses
-            else:
-                raise RuntimeError(f"Invalid handedness value: unexpected \"{handedness}\"")
-            avg_y = int(sum([p[1] for p in poses]) / len(poses))  # p[1] for y coordinate in (x, y) tuple
-            if DRAW:
-                x = int(w / 2)
-                cv2.drawMarker(img, ((x - 15 if handedness == Hand.LEFT else x + 15), avg_y), color, thickness=size)
-            if avg_y < forward_thresh:
-                sd.set(f"avian/{handedness}_tank", (avg_y - forward_thresh) / (forward_max - forward_thresh))
-            elif avg_y > backward_thresh:
-                sd.set(f"avian/{handedness}_tank", -1 * ((avg_y - backward_thresh) / (backward_max - backward_thresh)))
-            else:  # Deadzone
-                sd.set(f"avian/{handedness}_tank", 0)
+            if detect_hand_pose:
+                # Tank drive
+                if handedness == Hand.LEFT:
+                    poses = left_hand_poses
+                elif handedness == Hand.RIGHT:
+                    poses = right_hand_poses
+                else:
+                    raise RuntimeError(f"Invalid handedness value: unexpected \"{handedness}\"")
+                avg_y = int(sum([p[1] for p in poses]) / len(poses))  # p[1] for y coordinate in (x, y) tuple
+                if draw:
+                    x = int(w / 2)
+                    cv2.drawMarker(img, ((x - 15 if handedness == Hand.LEFT else x + 15), avg_y), color, thickness=size)
+                if avg_y < forward_thresh:
+                    sd.set(f"avian/{handedness}_tank", (avg_y - forward_thresh) / (forward_max - forward_thresh))
+                elif avg_y > backward_thresh:
+                    sd.set(f"avian/{handedness}_tank",
+                           -1 * ((avg_y - backward_thresh) / (backward_max - backward_thresh)))
+                else:  # Deadzone
+                    sd.set(f"avian/{handedness}_tank", 0)
 
     else:  # No hands detected
         sd.set("avian/detected_hands", 0)
@@ -220,7 +225,7 @@ while True:
     fps_deque.append(fps)
     sd.set("avian/fps", int(sum(fps_deque) / len(fps_deque)))
 
-    if DRAW:
+    if draw:
         cv2.namedWindow("Image", cv2.WINDOW_NORMAL)
         cv2.imshow("Image", img)
 
@@ -230,3 +235,5 @@ while True:
             exit(0)
         elif key == 105:  # i for invert
             sd.set("avian/invert_horizontal", not sd.get("avian/invert_horizontal"))
+    else:
+        cv2.destroyAllWindows()
