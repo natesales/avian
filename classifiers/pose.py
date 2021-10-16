@@ -24,7 +24,7 @@ def lm_avg(
     """
     x, y = 0, 0
     for target_lm in targets:
-        # landmarks are betweeen 0 and 1
+        # landmarks are between 0 and 1
         x += landmarks.landmark[target_lm].x
         y += landmarks.landmark[target_lm].y
     

@@ -15,7 +15,7 @@ NETWORKTABLES_SERVER = sys.argv[1]
 print(f"Using NetworkTables server {NETWORKTABLES_SERVER}")
 
 DETECT_HAND_POSE = True  # Detect historical hand pose
-POSE_CACHE_SIZE = 20  # Cache last 10 hand positions
+POSE_CACHE_SIZE = 20  # Cache last N hand positions
 DRAW = True  # Display graphics on screen
 DRAW_TO_ORIGIN = True
 
