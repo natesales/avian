@@ -6,7 +6,7 @@ import cv2
 import mediapipe
 import numpy
 
-from classifiers import Hand, GESTURES
+from classifiers import Hand, GESTURES, Gesture
 from classifiers import pose
 from classifiers.classify import Classifier
 from smartdashboard import SmartDashboard
@@ -29,6 +29,7 @@ SD_DEFAULTS = {
     "avian/fps": 0,
     "avian/detected_hands": 0,
     "avian/calibrated": False,
+    "avian/angle": 0,
 }
 
 for detection in GESTURES:
@@ -126,6 +127,12 @@ while True:
             gesture = classifier.classify(hand_landmarks)
             if gesture != "":
                 sd.set(f"avian/{handedness}_{gesture}", True)
+
+            if len(right_hand_poses) > 0:
+                # print(len(left_hand_poses))
+                handX, handY = right_hand_poses[0]
+                angle = numpy.arctan((handY*2-1) / (handX*2-1)) * (180/numpy.pi)
+                sd.set("avian/angle", int(angle))
 
             # Set all other gestures to false
             for g in GESTURES:

@@ -7,6 +7,7 @@ from . import Direction
 
 
 def hand_vector(points: collections.deque):
+
     pass  # TODO
 
 
