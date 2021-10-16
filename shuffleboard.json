@@ -10,9 +10,9 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "tiles": {
-          "3,4": {
+          "7,2": {
             "size": [
-              2,
+              3,
               1
             ],
             "content": {
@@ -25,40 +25,23 @@
               "Visuals/Display value": true
             }
           },
-          "3,0": {
+          "2,0": {
             "size": [
               2,
               1
             ],
             "content": {
-              "_type": "Toggle Switch",
-              "_source0": "network_table:///SmartDashboard/avian/invert_horizontal",
-              "_title": "avian/invert_horizontal"
-            }
-          },
-          "3,1": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Toggle Switch",
-              "_source0": "network_table:///SmartDashboard/avian/invert_vertical",
-              "_title": "avian/invert_vertical"
-            }
-          },
-          "6,0": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
+              "_type": "Number Bar",
               "_source0": "network_table:///SmartDashboard/avian/fps",
-              "_title": "avian/fps"
+              "_title": "avian/fps",
+              "Range/Min": 0,
+              "Range/Max": 200,
+              "Range/Center": 0.0,
+              "Visuals/Num tick marks": 5,
+              "Visuals/Show text": true
             }
           },
-          "3,3": {
+          "2,2": {
             "size": [
               2,
               1
@@ -69,115 +52,171 @@
               "_title": "avian/max_num_hands"
             }
           },
-          "8,0": {
+          "2,1": {
             "size": [
               2,
               1
             ],
             "content": {
-              "_type": "Text View",
+              "_type": "Number Bar",
               "_source0": "network_table:///SmartDashboard/avian/detected_hands",
-              "_title": "avian/detected_hands"
+              "_title": "avian/detected_hands",
+              "Range/Min": 0,
+              "Range/Max": 10,
+              "Range/Center": 0.0,
+              "Visuals/Num tick marks": 5,
+              "Visuals/Show text": true
             }
           },
-          "3,2": {
+          "7,0": {
             "size": [
-              2,
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Gestures",
+              "Layout/Number of columns": 2,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "0,0": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/avian/left_pinch",
+                  "_title": "avian/left_pinch",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "1,0": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/avian/right_pinch",
+                  "_title": "avian/right_pinch",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "0,1": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/avian/left_middle_finger",
+                  "_title": "avian/left_middle_finger",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "1,1": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/avian/right_middle_finger",
+                  "_title": "avian/right_middle_finger",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "0,2": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/avian/left_index_finger",
+                  "_title": "avian/left_index_finger",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "1,2": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/avian/right_index_finger",
+                  "_title": "avian/right_index_finger",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                }
+              }
+            }
+          },
+          "4,2": {
+            "size": [
+              3,
               1
             ],
             "content": {
-              "_type": "Toggle Switch",
-              "_source0": "network_table:///SmartDashboard/avian/black_background",
-              "_title": "avian/black_background"
+              "_type": "Number Slider",
+              "_source0": "network_table:///SmartDashboard/avian/tank_top_bottom_deadzone",
+              "_title": "avian/tank_top_bottom_deadzone",
+              "Slider Settings/Min": -1.0,
+              "Slider Settings/Max": 1.0,
+              "Slider Settings/Block increment": 0.0625,
+              "Visuals/Display value": true
             }
           },
-          "6,1": {
+          "4,3": {
             "size": [
-              2,
+              3,
               1
             ],
             "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/avian/left_pinch",
-              "_title": "avian/left_pinch",
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
+              "_type": "Number Slider",
+              "_source0": "network_table:///SmartDashboard/avian/tank_middle_deadzone",
+              "_title": "avian/tank_middle_deadzone",
+              "Slider Settings/Min": -1.0,
+              "Slider Settings/Max": 1.0,
+              "Slider Settings/Block increment": 0.0625,
+              "Visuals/Display value": true
             }
           },
-          "8,1": {
+          "4,0": {
             "size": [
-              2,
-              1
+              3,
+              2
             ],
             "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/avian/right_pinch",
-              "_title": "avian/right_pinch",
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
+              "_type": "Grid Layout",
+              "_title": "Tank Drive",
+              "Layout/Number of columns": 2,
+              "Layout/Number of rows": 1,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "0,0": {
+                  "_type": "Simple Dial",
+                  "_source0": "network_table:///SmartDashboard/avian/left_tank",
+                  "_title": "avian/left_tank",
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Visuals/Show value": true
+                },
+                "1,0": {
+                  "_type": "Simple Dial",
+                  "_source0": "network_table:///SmartDashboard/avian/right_tank",
+                  "_title": "avian/right_tank",
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Visuals/Show value": true
+                }
+              }
             }
           },
-          "6,3": {
+          "0,0": {
             "size": [
               2,
-              1
+              3
             ],
             "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/avian/left_middle_finger",
-              "_title": "avian/left_middle_finger",
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "8,3": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/avian/right_middle_finger",
-              "_title": "avian/right_middle_finger",
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "3,5": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Toggle Switch",
-              "_source0": "network_table:///SmartDashboard/avian/calibrated",
-              "_title": "avian/calibrated"
-            }
-          },
-          "6,4": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/avian/left_index_finger",
-              "_title": "avian/left_index_finger",
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "8,4": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/avian/right_index_finger",
-              "_title": "avian/right_index_finger",
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
+              "_type": "List Layout",
+              "_title": "Graphics",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Toggle Button",
+                  "_source0": "network_table:///SmartDashboard/avian/calibrated",
+                  "_title": "avian/calibrated"
+                },
+                {
+                  "_type": "Toggle Button",
+                  "_source0": "network_table:///SmartDashboard/avian/invert_horizontal",
+                  "_title": "avian/invert_horizontal"
+                },
+                {
+                  "_type": "Toggle Button",
+                  "_source0": "network_table:///SmartDashboard/avian/invert_vertical",
+                  "_title": "avian/invert_vertical"
+                },
+                {
+                  "_type": "Toggle Button",
+                  "_source0": "network_table:///SmartDashboard/avian/black_background",
+                  "_title": "avian/black_background"
+                }
+              ]
             }
           }
         }
@@ -197,9 +236,9 @@
     }
   ],
   "windowGeometry": {
-    "x": 1153.0,
-    "y": 32.0,
-    "width": 1407.0,
-    "height": 1408.0
+    "x": 914.0,
+    "y": 178.0,
+    "width": 1608.0,
+    "height": 853.0
   }
 }
