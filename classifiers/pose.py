@@ -27,7 +27,7 @@ def lm_avg(
         # landmarks are between 0 and 1
         x += landmarks.landmark[target_lm].x
         y += landmarks.landmark[target_lm].y
-    
+
     return int(x / len(targets) * width), int(y / len(targets) * height)
 
 
@@ -66,7 +66,7 @@ def lm_threshold(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedL
                  direction: str) -> bool:
     """
     Check if a landmark is above or below a list of landmarks
-    :param landmarks:
+    :param landmarks: List of landmarks in hand
     :param lm: Landmark to evaluate
     :param lms: List of landmarks to evaluate
     :param direction: Above or Below
@@ -80,3 +80,21 @@ def lm_threshold(landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedL
         if (direction == Direction.BELOW and finger_lm_y < lm_y) or (direction == Direction.ABOVE and finger_lm_y > lm_y):
             return False
     return True
+
+
+def lm_slope(
+        landmarks: mediapipe.framework.formats.landmark_pb2.NormalizedLandmarkList,
+        lm1: mediapipe.solutions.hands.HandLandmark,
+        lm2: mediapipe.solutions.hands.HandLandmark
+) -> int:
+    """
+    Calculate the slope of the line between two landmarks
+    :param landmarks: List of landmarks in hand
+    :param lm1: First landmark
+    :param lm2: Second landmark
+    :return:
+    """
+
+    lm1_pose = landmarks.landmark[lm1]
+    lm2_pose = landmarks.landmark[lm2]
+    return (lm2_pose.y - lm1_pose.y) / (lm2_pose.x - lm1_pose.x)
