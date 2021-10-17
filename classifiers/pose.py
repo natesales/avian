@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 import mediapipe
 
-from . import Direction
+from . import Direction, SwipeDirection
 
 
 def hand_vector(points: collections.deque):
@@ -98,3 +98,18 @@ def lm_slope(
     lm1_pose = landmarks.landmark[lm1]
     lm2_pose = landmarks.landmark[lm2]
     return (lm2_pose.y - lm1_pose.y) / (lm2_pose.x - lm1_pose.x)
+
+
+def hand_swipe(history: collections.deque, distance_threshold: int, direction: SwipeDirection) -> bool:
+    """
+    Calculate whether a hand has moved a certain distance within the length of the cache
+    :param history: Historical cache of hand positions
+    :param distance_threshold: Swipe distance threshold
+    :return:
+    """
+    startX = history[len(history) - 1][0]
+    endX = history[0][0]
+    distance_traveled = endX - startX
+    if direction == SwipeDirection.LEFT:
+        return distance_traveled > distance_threshold
+    return distance_traveled < -distance_threshold

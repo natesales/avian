@@ -6,7 +6,7 @@ import cv2
 import mediapipe
 import numpy
 
-from classifiers import Hand, GESTURES
+from classifiers import SWIPE_DIRECTIONS, Hand, GESTURES, SwipeDirection
 from classifiers import pose
 from classifiers.classify import Classifier
 from smartdashboard import SmartDashboard
@@ -41,6 +41,9 @@ SD_DEFAULTS = {
 for detection in GESTURES:
     SD_DEFAULTS[f"avian/left_{detection}"] = False
     SD_DEFAULTS[f"avian/right_{detection}"] = False
+
+for direction in SWIPE_DIRECTIONS:
+    SD_DEFAULTS[f"avian/{direction}_swipe_detected"] = False
 
 cap = cv2.VideoCapture(0)
 fps_deque = collections.deque(maxlen=10)
@@ -182,13 +185,10 @@ while True:
             #     cv2.line(img, (int(lm.x * w), int(lm.y * h)), (int(w / 2), int(h / 2)), (255, 255, 255), 10)
             #     cv2.putText(img, str(angle), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
             #
-            # if len(right_hand_poses) > 0:
-            #     startX, startY = right_hand_poses[len(right_hand_poses) - 1]
-            #     endX, endY = right_hand_poses[0]
-            #     distance_traveled = endX - startX
-            #     if distance_traveled > 100:
-            #         swiped_distance += 10
-            #     # print(p_time)
+            if len(right_hand_poses) > 0:
+                sd.set("avian/right_swipe_detected", pose.hand_swipe(right_hand_poses, 100, SwipeDirection.LEFT))
+            if len(left_hand_poses) > 0:
+                sd.set("avian/left_swipe_detected", pose.hand_swipe(left_hand_poses, 100, SwipeDirection.RIGHT))
 
             if detect_hand_pose:
                 # Tank drive
@@ -224,6 +224,7 @@ while True:
     p_time = c_time
     fps_deque.append(fps)
     sd.set("avian/fps", int(sum(fps_deque) / len(fps_deque)))
+    cv2.putText(img, str(swiped_distance), (w-100, h-100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
     if draw:
         cv2.namedWindow("Image", cv2.WINDOW_NORMAL)
