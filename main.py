@@ -95,20 +95,22 @@ while True:
         h, w, _ = img.shape
         img = numpy.zeros((h, w, 3), numpy.uint8)
 
-    # Draw segment lines
-    color = (255, 255, 255)
-    size = 3
     middle_deadzone = int(sd.get("avian/tank_middle_deadzone"))
     top_bottom_deadzone = int(sd.get("avian/tank_top_bottom_deadzone"))
     forward_thresh = int(h / 2) - middle_deadzone
     backward_thresh = int(h / 2) + middle_deadzone
     forward_max = top_bottom_deadzone
     backward_max = h - top_bottom_deadzone
-    # cv2.line(img, (int(w / 2), 0), (int(w / 2), h), color, size)  # Vertical line
-    cv2.line(img, (0, forward_thresh), (w, forward_thresh), color, size)  # Forward area
-    cv2.line(img, (0, backward_thresh), (w, backward_thresh), color, size)  # Backward area
-    cv2.line(img, (0, forward_max), (w, forward_max), color, size)  # Forward max
-    cv2.line(img, (0, backward_max), (w, backward_max), color, size)  # Backward max
+
+    if draw:
+        # Draw tank drive lines
+        color = (255, 255, 255)
+        size = 3
+        # cv2.line(img, (int(w / 2), 0), (int(w / 2), h), color, size)  # Vertical line
+        cv2.line(img, (0, forward_thresh), (w, forward_thresh), color, size)  # Forward area
+        cv2.line(img, (0, backward_thresh), (w, backward_thresh), color, size)  # Backward area
+        cv2.line(img, (0, forward_max), (w, forward_max), color, size)  # Forward max
+        cv2.line(img, (0, backward_max), (w, backward_max), color, size)  # Backward max
 
     if results.multi_hand_landmarks:
         sd.set("avian/detected_hands", len(results.multi_hand_landmarks))
