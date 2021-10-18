@@ -20,6 +20,7 @@ class Gesture:
     PINCH = "pinch"
     MIDDLE_FINGER = "middle_finger"
     INDEX_FINGER = "index_finger"
+    SWIPE = "swipe"
 
 
 class SwipeDirection:
@@ -27,8 +28,7 @@ class SwipeDirection:
     RIGHT = "right"
 
 
-GESTURES = ["pinch", "middle_finger", "index_finger"]
-SWIPE_DIRECTIONS = ["left", "right"]
+GESTURES = ["pinch", "middle_finger", "index_finger", "swipe"]
 
 
 def circle_intersection(x0, y0, x1, y1, radius) -> bool:

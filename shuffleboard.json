@@ -124,15 +124,15 @@
                 },
                 "0,3": {
                   "_type": "Boolean Box",
-                  "_source0": "network_table:///SmartDashboard/avian/left_swipe_detected",
-                  "_title": "avian/left_swipe_detected",
+                  "_source0": "network_table:///SmartDashboard/avian/left_swipe",
+                  "_title": "avian/left_swipe",
                   "Colors/Color when true": "#7CFC00FF",
                   "Colors/Color when false": "#8B0000FF"
                 },
                 "1,3": {
                   "_type": "Boolean Box",
-                  "_source0": "network_table:///SmartDashboard/avian/right_swipe_detected",
-                  "_title": "avian/right_swipe_detected",
+                  "_source0": "network_table:///SmartDashboard/avian/right_swipe",
+                  "_title": "avian/right_swipe",
                   "Colors/Color when true": "#7CFC00FF",
                   "Colors/Color when false": "#8B0000FF"
                 }
@@ -282,9 +282,9 @@
     }
   ],
   "windowGeometry": {
-    "x": 744.0,
-    "y": 238.0,
-    "width": 1763.0,
-    "height": 844.0
+    "x": 657.0,
+    "y": 232.0,
+    "width": 1786.0,
+    "height": 792.0
   }
 }

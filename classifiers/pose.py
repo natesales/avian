@@ -105,8 +105,10 @@ def hand_swipe(history: collections.deque, distance_threshold: int, direction: S
     Calculate whether a hand has moved a certain distance within the length of the cache
     :param history: Historical cache of hand positions
     :param distance_threshold: Swipe distance threshold
+    :param direction: Direction of swipe (left or right)
     :return:
     """
+
     startX = history[len(history) - 1][0]
     endX = history[0][0]
     distance_traveled = endX - startX

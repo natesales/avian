@@ -6,7 +6,7 @@ import cv2
 import mediapipe
 import numpy
 
-from classifiers import SWIPE_DIRECTIONS, Hand, GESTURES, SwipeDirection
+from classifiers import Hand, GESTURES, SwipeDirection
 from classifiers import pose
 from classifiers.classify import Classifier
 from smartdashboard import SmartDashboard
@@ -26,7 +26,7 @@ SD_DEFAULTS = {
     "avian/pose_cache_size": 5,
     "avian/draw": True,
     "avian/detect_hand_pose": True,
-    "avian/swipe_threshold": 200,
+    "avian/swipe_threshold": 220,
 
     # Deadzones are in pixels above and below.
     # Not cumulative; the space between {forward,backward}_thresh is 2*deadzone)
@@ -42,9 +42,6 @@ SD_DEFAULTS = {
 for detection in GESTURES:
     SD_DEFAULTS[f"avian/left_{detection}"] = False
     SD_DEFAULTS[f"avian/right_{detection}"] = False
-
-for direction in SWIPE_DIRECTIONS:
-    SD_DEFAULTS[f"avian/{direction}_swipe_detected"] = False
 
 cap = cv2.VideoCapture(0)
 fps_deque = collections.deque(maxlen=10)
@@ -174,9 +171,9 @@ while True:
                 # Swipe detection
                 swipe_threshold = sd.get("avian/swipe_threshold")
                 if len(right_hand_poses) > 0:
-                    sd.set("avian/right_swipe_detected", pose.hand_swipe(right_hand_poses, swipe_threshold, SwipeDirection.LEFT))
+                    sd.set("avian/right_swipe", pose.hand_swipe(right_hand_poses, swipe_threshold, SwipeDirection.LEFT))
                 if len(left_hand_poses) > 0:
-                    sd.set("avian/left_swipe_detected", pose.hand_swipe(left_hand_poses, swipe_threshold, SwipeDirection.RIGHT))
+                    sd.set("avian/left_swipe", pose.hand_swipe(left_hand_poses, swipe_threshold, SwipeDirection.RIGHT))
 
                 # Tank drive
                 if handedness == Hand.LEFT:
