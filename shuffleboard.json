@@ -16,13 +16,9 @@
               1
             ],
             "content": {
-              "_type": "Number Slider",
+              "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/avian/pinch_proximity_radius",
-              "_title": "avian/pinch_proximity_radius",
-              "Slider Settings/Min": -0.0,
-              "Slider Settings/Max": 100.0,
-              "Slider Settings/Block increment": 1.0,
-              "Visuals/Display value": true
+              "_title": "avian/pinch_proximity_radius"
             }
           },
           "2,0": {
@@ -31,14 +27,9 @@
               1
             ],
             "content": {
-              "_type": "Number Bar",
+              "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/avian/fps",
-              "_title": "avian/fps",
-              "Range/Min": 0.0,
-              "Range/Max": 200.0,
-              "Range/Center": 0.0,
-              "Visuals/Num tick marks": 5,
-              "Visuals/Show text": true
+              "_title": "avian/fps"
             }
           },
           "2,2": {
@@ -145,13 +136,9 @@
               1
             ],
             "content": {
-              "_type": "Number Slider",
+              "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/avian/tank_top_bottom_deadzone",
-              "_title": "avian/tank_top_bottom_deadzone",
-              "Slider Settings/Min": -1.0,
-              "Slider Settings/Max": 1.0,
-              "Slider Settings/Block increment": 0.0625,
-              "Visuals/Display value": true
+              "_title": "avian/tank_top_bottom_deadzone"
             }
           },
           "4,3": {
@@ -160,13 +147,9 @@
               1
             ],
             "content": {
-              "_type": "Number Slider",
+              "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/avian/tank_middle_deadzone",
-              "_title": "avian/tank_middle_deadzone",
-              "Slider Settings/Min": -1.0,
-              "Slider Settings/Max": 1.0,
-              "Slider Settings/Block increment": 0.0625,
-              "Visuals/Display value": true
+              "_title": "avian/tank_middle_deadzone"
             }
           },
           "4,0": {
@@ -282,8 +265,8 @@
     }
   ],
   "windowGeometry": {
-    "x": 657.0,
-    "y": 232.0,
+    "x": 564.0,
+    "y": 183.0,
     "width": 1786.0,
     "height": 792.0
   }
