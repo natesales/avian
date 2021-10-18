@@ -14,9 +14,6 @@ from smartdashboard import SmartDashboard
 NETWORKTABLES_SERVER = sys.argv[1]
 print(f"Using NetworkTables server {NETWORKTABLES_SERVER}")
 
-# TODO: move to smartdashboard
-DRAW_TO_ORIGIN = True
-
 SD_DEFAULTS = {
     "avian/max_num_hands": 2,
     "avian/pinch_proximity_radius": 7,
@@ -28,8 +25,7 @@ SD_DEFAULTS = {
     "avian/detect_hand_pose": True,
     "avian/swipe_threshold": 220,
 
-    # Deadzones are in pixels above and below.
-    # Not cumulative; the space between {forward,backward}_thresh is 2*deadzone)
+    # Deadzones are in pixels above and below. Not cumulative; the total space is 2*deadzone
     "avian/tank_middle_deadzone": 30,
     "avian/tank_top_bottom_deadzone": 50,
 
@@ -70,9 +66,6 @@ p_time = 0
 pose_cache_size = int(sd.get("avian/pose_cache_size"))
 left_hand_poses = collections.deque(maxlen=pose_cache_size)
 right_hand_poses = collections.deque(maxlen=pose_cache_size)
-
-# testing
-swiped_distance = 0
 
 while True:
     success, img = cap.read()
