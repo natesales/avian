@@ -129,8 +129,7 @@ while True:
 
             if draw:
                 # Draw hand matrix
-                mediapipe.solutions.drawing_utils.draw_landmarks(img, hand_landmarks,
-                                                                 mediapipe.solutions.hands.HAND_CONNECTIONS)
+                mediapipe.solutions.drawing_utils.draw_landmarks(img, hand_landmarks, mediapipe.solutions.hands.HAND_CONNECTIONS)
 
                 # Draw pinch radii
                 for digit in [mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP,
@@ -143,9 +142,7 @@ while True:
                         color = (255, 255, 255)
 
                     lm = hand_landmarks.landmark[digit]
-                    cv2.circle(img, (int(lm.x * w), int(lm.y * h)),
-                               int(sd.get("avian/pinch_proximity_radius")),
-                               color, thickness=2)
+                    cv2.circle(img, (int(lm.x * w), int(lm.y * h)), int(sd.get("avian/pinch_proximity_radius")), color, thickness=2)
 
             # Calibration
             if not sd.get("avian/calibrated"):
@@ -205,8 +202,7 @@ while True:
                 if avg_y < forward_thresh:
                     sd.set(f"avian/{handedness}_tank", (avg_y - forward_thresh) / (forward_max - forward_thresh))
                 elif avg_y > backward_thresh:
-                    sd.set(f"avian/{handedness}_tank",
-                           -1 * ((avg_y - backward_thresh) / (backward_max - backward_thresh)))
+                    sd.set(f"avian/{handedness}_tank", -1 * ((avg_y - backward_thresh) / (backward_max - backward_thresh)))
                 else:  # Deadzone
                     sd.set(f"avian/{handedness}_tank", 0)
 
@@ -224,7 +220,7 @@ while True:
     p_time = c_time
     fps_deque.append(fps)
     sd.set("avian/fps", int(sum(fps_deque) / len(fps_deque)))
-    cv2.putText(img, str(swiped_distance), (w-100, h-100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+    cv2.putText(img, str(swiped_distance), (w - 100, h - 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
     if draw:
         cv2.namedWindow("Image", cv2.WINDOW_NORMAL)
