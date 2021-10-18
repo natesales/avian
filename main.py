@@ -26,6 +26,7 @@ SD_DEFAULTS = {
     "avian/pose_cache_size": 5,
     "avian/draw": True,
     "avian/detect_hand_pose": True,
+    "avian/swipe_threshold": 200,
 
     # Deadzones are in pixels above and below.
     # Not cumulative; the space between {forward,backward}_thresh is 2*deadzone)
@@ -169,25 +170,14 @@ while True:
                 if g != gesture:
                     sd.set(f"avian/{handedness}_{g}", False)
 
-            # # draw line to origin
-            # if DRAW_TO_ORIGIN and len(right_hand_poses) > 0:
-            #     # print(right_hand_poses[0])
-            #     lm = hand_landmarks.landmark[mediapipe.solutions.hands.HandLandmark.INDEX_FINGER_TIP]
-            #     angle = numpy.arctan((-lm.y + 0.5) / (lm.x - 0.5))
-            #     if lm.x < 0.5:
-            #         angle += numpy.pi
-            #     if angle < 0:
-            #         angle = 2 * numpy.pi + angle
-            #     angle *= (180 / numpy.pi)
-            #     cv2.line(img, (int(lm.x * w), int(lm.y * h)), (int(w / 2), int(h / 2)), (255, 255, 255), 10)
-            #     cv2.putText(img, str(angle), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-            #
-            if len(right_hand_poses) > 0:
-                sd.set("avian/right_swipe_detected", pose.hand_swipe(right_hand_poses, 100, SwipeDirection.LEFT))
-            if len(left_hand_poses) > 0:
-                sd.set("avian/left_swipe_detected", pose.hand_swipe(left_hand_poses, 100, SwipeDirection.RIGHT))
-
             if detect_hand_pose:
+                # Swipe detection
+                swipe_threshold = sd.get("avian/swipe_threshold")
+                if len(right_hand_poses) > 0:
+                    sd.set("avian/right_swipe_detected", pose.hand_swipe(right_hand_poses, swipe_threshold, SwipeDirection.LEFT))
+                if len(left_hand_poses) > 0:
+                    sd.set("avian/left_swipe_detected", pose.hand_swipe(left_hand_poses, swipe_threshold, SwipeDirection.RIGHT))
+
                 # Tank drive
                 if handedness == Hand.LEFT:
                     poses = left_hand_poses
