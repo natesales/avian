@@ -210,7 +210,6 @@ while True:
     p_time = c_time
     fps_deque.append(fps)
     sd.set("avian/fps", int(sum(fps_deque) / len(fps_deque)))
-    cv2.putText(img, str(swiped_distance), (w - 100, h - 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
     if draw:
         cv2.namedWindow("Image", cv2.WINDOW_NORMAL)
